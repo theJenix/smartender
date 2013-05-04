@@ -1,0 +1,18 @@
+<classpath>
+  <classpathentry output="target/scala-2.10/classes" path="src/main/scala" kind="src"></classpathentry>
+  <classpathentry output="target/scala-2.10/classes" path="src/main/java" kind="src"></classpathentry>
+  <classpathentry output="target/scala-2.10/test-classes" path="src/test/scala" kind="src"></classpathentry>
+  <classpathentry output="target/scala-2.10/test-classes" path="src/test/java" kind="src"></classpathentry>
+  <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"></classpathentry>
+  <classpathentry path="/Users/thejenix/.ivy2/cache/org.scalamock/scalamock-scalatest-support_2.10/jars/scalamock-scalatest-support_2.10-3.0.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/thejenix/.ivy2/cache/org.scalamock/scalamock-core_2.10/jars/scalamock-core_2.10-3.0.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/thejenix/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.0.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/thejenix/.ivy2/cache/org.scalatest/scalatest_2.10.0/jars/scalatest_2.10.0-2.0.M5.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/thejenix/.ivy2/cache/org.scalatest/scalatest_2.10/jars/scalatest_2.10-2.0.M5b.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/thejenix/.ivy2/cache/org.scalaz/scalaz-core_2.10/bundles/scalaz-core_2.10-7.0.0-M7.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/thejenix/.ivy2/cache/org.scalacheck/scalacheck_2.10/jars/scalacheck_2.10-1.10.1.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/thejenix/.ivy2/cache/org.scala-tools.testing/test-interface/jars/test-interface-0.5.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/thejenix/.ivy2/cache/org.scala-lang/scala-actors/jars/scala-actors-2.10.1.jar" kind="lib"></classpathentry>
+  <classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"></classpathentry>
+  <classpathentry path="bin" kind="output"></classpathentry>
+</classpath>
