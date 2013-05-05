@@ -5,7 +5,10 @@ import scalaz.State
 import scala.util.Random
 
 case class MarkovState(value: String,
-                       count: Int = 0);
+                       count: Int = 0) {
+
+  def incrementCount = MarkovState(value, count + 1)
+}
 
 case class MarkovChain2(base: Set[MarkovState]
                                         = Set[MarkovState](),
@@ -28,13 +31,13 @@ object MarkovChain2 {
       val set = m getOrElse (k, Set[MarkovState]())
       //return a modified map with pred mapped to the set that includes
       // the new state
-      val newV = for (oldV <- set find (o => o.value == v.value))
-        yield MarkovState(oldV.value, oldV.count + 1)
-      m + (k -> (set + newV.getOrElse(v)))
+      val oldV = set find (o => o.value == v.value) getOrElse v
+      //NOTE: make sure we increment the count before adding to the set
+      m + (k -> (set + oldV.incrementCount))
   }
   
   def addToBase(state: MarkovState): State[MarkovChain2, Unit] = {
-    modify[MarkovChain2](s => s.copy(base = s.base + state))
+    modify[MarkovChain2](s => s.copy(base = s.base + state.incrementCount))
   }
   
   def addToFirstOrder(state: MarkovState, pred: MarkovState): State[MarkovChain2, Unit] =  {

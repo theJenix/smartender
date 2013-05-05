@@ -24,7 +24,7 @@ object MarkovChainTest {
     val s2 = chain.add(state4, (state1, state2))(s1)._1
     println(chain.sample(s2)._2)
     println(chain.sample(s2)._2)
-    println(chain.sample(s2)._2)
-    println(chain.sample(s2)._2)
+    println(chain.sampleNext(state2)(s2)._2)
+    println(chain.sampleNext((state1, state2))(s2)._2)
   }
 }
