@@ -4,18 +4,29 @@ import scala.collection.immutable.HashMap
 import scalaz.State
 import scala.util.Random
 
-case class MarkovState(value: String,
-                       count: Int = 0) {
+case class MarkovState(value: Token,
+                       count: Int) {
 
   def incrementCount = MarkovState(value, count + 1)
 }
 
+object MarkovState {
+  def apply(token: Token): MarkovState = MarkovState(token, 1)
+}
+
+sealed abstract class Token
+
+case class EndToken                   extends Token
+case class StartToken                 extends Token
+case class StringToken(value: String) extends Token
+
+
 case class MarkovChain2(base: Set[MarkovState]
                                         = Set[MarkovState](),
-                        firstOrder: Map[MarkovState, Set[MarkovState]]
-                                        = HashMap[MarkovState, Set[MarkovState]](),
-                        secondOrder: Map[(MarkovState, MarkovState), Set[MarkovState]]
-                                        = HashMap[(MarkovState, MarkovState), Set[MarkovState]]()
+                        firstOrder: Map[Token, Set[MarkovState]]
+                                        = HashMap[Token, Set[MarkovState]](),
+                        secondOrder: Map[(Token, Token), Set[MarkovState]]
+                                        = HashMap[(Token, Token), Set[MarkovState]]()
                        )
 
 /**
@@ -36,39 +47,39 @@ object MarkovChain2 {
       m + (k -> (set + oldV.incrementCount))
   }
   
-  def addToBase(state: MarkovState): State[MarkovChain2, Unit] = {
-    modify[MarkovChain2](s => s.copy(base = s.base + state.incrementCount))
+  def addToBase(token: Token): State[MarkovChain2, Unit] = {
+    modify[MarkovChain2](s => s.copy(base = s.base + MarkovState(token)))
   }
   
-  def addToFirstOrder(state: MarkovState, pred: MarkovState): State[MarkovChain2, Unit] =  {
-    modify[MarkovChain2](s => s.copy(firstOrder = addToMappedSet(s.firstOrder, pred, state)))
+  def addToFirstOrder(token: Token, pred: Token): State[MarkovChain2, Unit] =  {
+    modify[MarkovChain2](s => s.copy(firstOrder = addToMappedSet(s.firstOrder, pred, MarkovState(token))))
   }
   
-  def addToSecondOrder(state: MarkovState, pred: (MarkovState, MarkovState)): State[MarkovChain2, Unit] =  {
-    modify[MarkovChain2](s => s.copy(secondOrder = addToMappedSet(s.secondOrder, pred, state)))
+  def addToSecondOrder(token: Token, pred: (Token, Token)): State[MarkovChain2, Unit] =  {
+    modify[MarkovChain2](s => s.copy(secondOrder = addToMappedSet(s.secondOrder, pred, MarkovState(token))))
   }
 
-  def add(state: MarkovState, chain: (MarkovState, MarkovState)): State[MarkovChain2, Unit] = {
+  def add(token: Token, chain: (Token, Token)): State[MarkovChain2, Unit] = {
     for {
-      _ <- addToBase(state)
-      _ <- addToFirstOrder(state, chain._2)
-      _ <- addToSecondOrder(state, chain)
+//      _ <- addToBase(token)
+      _ <- addToFirstOrder(token, chain._2)
+      _ <- addToSecondOrder(token, chain)
     } yield ()
   }
   
-  def sample: State[MarkovChain2, MarkovState] = {
-    gets[MarkovChain2, MarkovState] (s => rouletteSample(s.base))
+  def sample: State[MarkovChain2, Token] = {
+    gets[MarkovChain2, Token] (s => rouletteSample(s.base))
   }
   
-  def sampleNext(pred: MarkovState): State[MarkovChain2, MarkovState] = {
-    gets[MarkovChain2, MarkovState] (s => rouletteSample2(s.firstOrder, pred))
+  def sampleNext(pred: Token): State[MarkovChain2, Token] = {
+    gets[MarkovChain2, Token] (s => rouletteSample2(s.firstOrder, pred))
   }
   
-  def sampleNext(pred: (MarkovState, MarkovState)): State[MarkovChain2, MarkovState] = {
-    gets[MarkovChain2, MarkovState] (s => rouletteSample2(s.secondOrder, pred))
+  def sampleNext(pred: (Token, Token)): State[MarkovChain2, Token] = {
+    gets[MarkovChain2, Token] (s => rouletteSample2(s.secondOrder, pred))
   }
   
-  private def rouletteSample(set: Set[MarkovState]): MarkovState = {
+  private def rouletteSample(set: Set[MarkovState]): Token = {
     val rnd = new Random
     val total = set.foldLeft(0)((sum, s) => sum + s.count)
 
@@ -82,10 +93,10 @@ object MarkovChain2 {
       selS = s
       bounds += s.count
     }
-    selS
+    selS.value
   }
   
-  private def rouletteSample2[K](map: Map[K,Set[MarkovState]], pred: K): MarkovState = {
+  private def rouletteSample2[K](map: Map[K,Set[MarkovState]], pred: K): Token = {
     val set = map(pred)
 
     rouletteSample(set)
